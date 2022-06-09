@@ -12,7 +12,6 @@ WHITESPACE [ \t\n\r]
 ALPHABET [a-zA-Z0-9_\\\%:;,. ]
 %%
 mov     {return INSTRUCTION_MOV;}
-movf    {return INSTRUCTION_MOVF;}
 cmp     {return INSTRUCTION_CMP;}
 jmp     {return INSTRUCTION_JMP;}
 print   {return MACRO_PRINT;}
@@ -21,7 +20,7 @@ print   {return MACRO_PRINT;}
 \)      {return BRACKET_RIGHT;}
 ,       {return SEPARATOR;}
 ;       {return LINE_SEPARATOR;}
-{DIGIT}+\.{DIGIT}+    { yylval.f = atof(yytext); return FLOAT;      }
+{DIGIT}+\.{DIGIT}+    { yylval.i = (int)atof(yytext); return INT;      }
 {DIGIT}+            { yylval.i = atoi(yytext); return INT;        }
 \"{ALPHABET}{ALPHABET}+\"      { yylval.str = strdup(yytext); return STRING; }
 \'{ALPHABET}\'       { yylval.c = yytext[1]; return CHAR;        }

@@ -3,4 +3,3 @@ print("Hallo\n");
 print("\tHallo\n");
 print("INT: %d\n", 15);
 print("INT: %d\n", '2');
-print("INT: %f\n", 15.0);
