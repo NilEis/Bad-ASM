@@ -1,0 +1,6 @@
+
+*.exe
+bin/c/bison.output
+bin/c/bison.tab.c
+bin/c/bison.tab.h
+bin/c/lex.yy.c
