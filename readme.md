@@ -1,4 +1,4 @@
-# Basm (Bad assembler)
+# Bad-asm (Bad assembler)
 This is a bad example of how to use Bison to implemement a asm-like language, thats why I called it Bad-assembler
 ## Notes:
 - Memory
