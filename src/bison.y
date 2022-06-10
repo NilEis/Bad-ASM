@@ -56,7 +56,7 @@ input:
   | input op
   ;
 op: instruction LINE_SEPARATOR | output LINE_SEPARATOR | label | LINE_SEPARATOR;
-instruction: mov | cmp | jmp | add
+instruction: mov | cmp | jmp | add | sub | mul | div | and | or | xor | not
 ;
 mov:  INSTRUCTION_MOV MEM SEPARATOR VAL {printf("\tmem[%d]=%d;\n",$2,$4);}
     | INSTRUCTION_MOV MEM SEPARATOR MEM {printf("\tmem[%d]=mem[%d];\n",$2,$4);}
@@ -72,7 +72,7 @@ jmp:  INSTRUCTION_JMP JMP_LABEL { printf("\tgoto %s;\n",$2);free($2);           
     | INSTRUCTION_JGZ JMP_LABEL { printf("\tif(flag>0)goto %s;\n",$2);free($2);  }
     | INSTRUCTION_JLZ JMP_LABEL { printf("\tif(flag<0)goto %s;\n",$2);free($2);  }
 ;
-add:  INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d+%d;\n", $2, ($4 + $6)); }
+add:  INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 + $6)); }
     | INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d+mem[%d];\n", $2, $4, $6); }
     | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]+%d;\n", $2, $4, $6); }
     | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]+mem[%d];\n", $2, $4, $6); }
@@ -112,6 +112,7 @@ not:  INSTRUCTION_NOT MEM SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, (~$4))
 ;
 output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("\tprintf(\"%%s\", %s);\n", $3); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("\tprintf(%s,%d);\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR MEM BRACKET_RIGHT {printf("\tprintf(%s,mem[%d]);\n",$3, $5); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("\tprintf(%s,\'%c\');\n",$3, $5); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("\tprintf(%s,%s);\n",$3, $5);  free($3);}
 ;

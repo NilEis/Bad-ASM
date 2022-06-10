@@ -1,10 +1,10 @@
 all: basm
 
 ./bin/c/bison.tab.c ./bin/c/bison.tab.h: src/bison.y
-	bison -Wcounterexamples -t -d -b ./bin/c/bison src/bison.y
+	bison -Wcounterexamples -b ./bin/c/bison src/bison.y
 
 ./bin/c/lex.yy.c: src/flex.l ./bin/c/bison.tab.h
-	flex -d -o ./bin/c/lex.yy.c src/flex.l
+	flex  -o ./bin/c/lex.yy.c src/flex.l
 
 basm: ./bin/c/lex.yy.c ./bin/c/bison.tab.c ./bin/c/bison.tab.h
 	gcc ./bin/c/bison.tab.c ./bin/c/lex.yy.c -o ./bin/basm
