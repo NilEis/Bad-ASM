@@ -1,5 +1,8 @@
-print("%% ", "safsdf");
 print("Hallo\n");
 print("\tHallo\n");
 print("INT: %d\n", 15);
 print("INT: %d\n", '2');
+l:
+label:
+l_abel:
+jmp l;

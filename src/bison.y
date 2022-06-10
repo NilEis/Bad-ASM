@@ -4,13 +4,12 @@
     #include <inttypes.h>
     #include <ctype.h>
     #include <string.h>
+    #include "header.h"
     #define YYDEBUG 1
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
     void yyerror (char const *err);
-    int16_t mem[4096];
-    int16_t flag = 0;
 %}
 
 %union {
@@ -22,6 +21,8 @@
 %token <i> INT
 %token <c> CHAR
 %token <str> STRING
+%token <str> LABEL
+%token <str> JMP_LABEL
 
 %token INSTRUCTION_MOV
 %token INSTRUCTION_CMP
@@ -37,18 +38,19 @@
 
 %%
 input:
-  | input op LINE_SEPARATOR
+  | input op
   ;
-op: instruction | output;
+op: instruction LINE_SEPARATOR | output LINE_SEPARATOR | label;
 instruction: mov | cmp | jmp;
 mov: INSTRUCTION_MOV ;
 cmp: INSTRUCTION_CMP ;
-jmp: INSTRUCTION_JMP ;
-output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT         {printf("printf(\"%%s\", %s);\n", $3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT    {printf("printf(%s,%d);\n",$3, $5);  }
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT   {printf("printf(%s,\'%c\');\n",$3, $5);  }
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("printf(%s,%s);\n",$3, $5);  }
+jmp: INSTRUCTION_JMP JMP_LABEL {printf("goto %s;\n",$2);free($2);};
+output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("printf(\"%%s\", %s);\n", $3); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("printf(%s,%d);\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("printf(%s,\'%c\');\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("printf(%s,%s);\n",$3, $5);  free($3);}
 ;
+label: LABEL {printf("%s\n", $1); free($1);};
 %%
 
 int main(int argc, char**argv) {
@@ -63,7 +65,18 @@ int main(int argc, char**argv) {
       }
       yyin = f;
   }
+  printf("\
+  #include <stdint.h>\n\
+  #include <stdio.h>\n\
+  #include <stdlib.h>\n\
+  %s\n\
+  int main(int argc, char** argv)\n\
+  {\n\
+    int16_t mem[4096];\n\
+    int16_t flag = 0;\n\
+  \n",header_str);
   yyparse();
+  printf("\n}\n");
 }
 
 void yyerror (char const *s)
