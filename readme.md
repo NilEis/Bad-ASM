@@ -1,11 +1,9 @@
 # Basm (Bad assembler)
-This is a bad example of how to use Bison, thats why I called it Bad-assembler
+This is a bad example of how to use Bison to implemement a asm-like language, thats why I called it Bad-assembler
 ## Notes:
 - Memory
   - mem 4096b
   - flag-register
-  - a
-  - b
 - instructions
   - mov dest, src
   - movf dest, src
