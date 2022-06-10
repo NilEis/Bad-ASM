@@ -7,6 +7,7 @@
     extern int yylex();
 %}
 %option noyywrap
+%option case-insensitive
 DIGIT [0-9]
 WHITESPACE [ \t\n\r]
 ALPHABET [a-zA-Z0-9_\\\%:;,. ]
@@ -14,6 +15,10 @@ ALPHABET [a-zA-Z0-9_\\\%:;,. ]
 mov                       { return INSTRUCTION_MOV;                        }
 cmp                       { return INSTRUCTION_CMP;                        }
 jmp                       { return INSTRUCTION_JMP;                        }
+jnz                       { return INSTRUCTION_JNZ;                        }
+jez|jz                    { return INSTRUCTION_JEZ;                        }
+jgz|jg                    { return INSTRUCTION_JGZ;                        }
+jlz|jl                    { return INSTRUCTION_JLZ;                        }
 print                     { return MACRO_PRINT;                            }
 \"                        { return QUOTE;                                  }
 \(                        { return BRACKET_LEFT;                           }

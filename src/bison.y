@@ -27,6 +27,10 @@
 %token INSTRUCTION_MOV
 %token INSTRUCTION_CMP
 %token INSTRUCTION_JMP
+%token INSTRUCTION_JNZ
+%token INSTRUCTION_JEZ
+%token INSTRUCTION_JGZ
+%token INSTRUCTION_JLZ
 
 %token MACRO_PRINT
 
@@ -44,11 +48,16 @@ op: instruction LINE_SEPARATOR | output LINE_SEPARATOR | label;
 instruction: mov | cmp | jmp;
 mov: INSTRUCTION_MOV ;
 cmp: INSTRUCTION_CMP ;
-jmp: INSTRUCTION_JMP JMP_LABEL {printf("goto %s;\n",$2);free($2);};
-output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("printf(\"%%s\", %s);\n", $3); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("printf(%s,%d);\n",$3, $5); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("printf(%s,\'%c\');\n",$3, $5); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("printf(%s,%s);\n",$3, $5);  free($3);}
+jmp:  INSTRUCTION_JMP JMP_LABEL { printf("\tgoto %s;\n",$2);free($2);            }
+    | INSTRUCTION_JNZ JMP_LABEL { printf("\tif(flag!=0)goto %s;\n",$2);free($2); }
+    | INSTRUCTION_JEZ JMP_LABEL { printf("\tif(flag==0)goto %s;\n",$2);free($2); }
+    | INSTRUCTION_JGZ JMP_LABEL { printf("\tif(flag>0)goto %s;\n",$2);free($2);  }
+    | INSTRUCTION_JLZ JMP_LABEL { printf("\tif(flag<0)goto %s;\n",$2);free($2);  }
+;
+output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("\tprintf(\"%%s\", %s);\n", $3); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("\tprintf(%s,%d);\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("\tprintf(%s,\'%c\');\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("\tprintf(%s,%s);\n",$3, $5);  free($3);}
 ;
 label: LABEL {printf("%s\n", $1); free($1);};
 %%
@@ -66,20 +75,17 @@ int main(int argc, char**argv) {
       yyin = f;
   }
   printf("\
-  #include <stdint.h>\n\
-  #include <stdio.h>\n\
-  #include <stdlib.h>\n\
-  %s\n\
-  int main(int argc, char** argv)\n\
-  {\n\
-    int16_t mem[4096];\n\
-    int16_t flag = 0;\n\
-  \n",header_str);
+#include <stdint.h>\n\
+#include <stdio.h>\n\
+#include <stdlib.h>\n\
+%s\n\
+int main(int argc, char** argv)\n\
+{\n\tint16_t mem[4096];\n\tint16_t flag = 0;\n\n",header_str);
   yyparse();
-  printf("\n}\n");
+  printf("}\n");
 }
 
-void yyerror (char const *s)
+void yyerror (char const *err)
 {
-  fprintf (stderr, "%s\n", s);
+  fprintf (stderr, "%s\n", err);
 }
