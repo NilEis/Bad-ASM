@@ -120,10 +120,11 @@ output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf(output[DEF_PRINT
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf(output[DEF_PRINT_CHAR],$3, $5); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf(output[DEF_PRINT_STR],$3, $5);  free($3);}
 ;
-label: LABEL {printf("%s\n", $1); free($1);};
+label: LABEL {printf(output[DEF_LABEL], $1); free($1);};
 VAL:  INT {$$=$1;}
     | CHAR {$$=(int16_t)$1;}
 ;
+exit: EXIT {printf(output[DEF_EXIT]);};
 %%
 
 int main(int argc, char**argv) {

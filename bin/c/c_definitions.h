@@ -49,6 +49,8 @@ char *c_definitions[] = {
     "\tprintf(%s,mem[%d]);\n",
     "\tprintf(%s,\'%c\');\n",
     "\tprintf(%s,%s);\n",
+    "%s\n",
+    "return;\n",
     "}\n"};
 
 #endif // C_DEFINITIONS_H

@@ -105,6 +105,8 @@ main:\n\
     "",/*NOT IMPLEMENTED*/
     "",/*NOT IMPLEMENTED*/
     "",/*NOT IMPLEMENTED*/
+    "%s\n",
+    "",/*NOT IMPLEMENTED*/
     "section '.data' data readable writeable\nmem: dw 4096 dup 0\n"};
 
 #endif // ASM_DEFINITIONS_H
