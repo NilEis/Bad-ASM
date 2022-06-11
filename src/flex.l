@@ -5,9 +5,14 @@
     #include <inttypes.h>
     #include "bison.tab.h"
     extern int yylex();
+    void yyerror (char const *err)
+    {
+        fprintf (stderr, "Line %d: %s\n", yylineno, err);
+    }
 %}
 %option noyywrap
 %option case-insensitive
+%option yylineno
 DIGIT [0-9]
 WHITESPACE [ \t\n\r]
 ALPHABET [a-zA-Z0-9_\\\%:;,. ]

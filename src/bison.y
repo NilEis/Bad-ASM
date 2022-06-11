@@ -5,13 +5,17 @@
     #include <ctype.h>
     #include <string.h>
     #include "header.h"
+    #include "definitions.h"
     #define YYDEBUG 1
+    #define S(x) ((x)*(m_size))
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
+    char**output;
+    int m_size = 1;
     void yyerror (char const *err);
 %}
-
+%locations
 %union {
   int16_t i;
   char c;
@@ -58,61 +62,61 @@ input:
 op: instruction LINE_SEPARATOR | output LINE_SEPARATOR | label | LINE_SEPARATOR;
 instruction: mov | cmp | jmp | add | sub | mul | div | and | or | xor | not
 ;
-mov:  INSTRUCTION_MOV MEM SEPARATOR VAL {printf("\tmem[%d]=%d;\n",$2,$4);}
-    | INSTRUCTION_MOV MEM SEPARATOR MEM {printf("\tmem[%d]=mem[%d];\n",$2,$4);}
+mov:  INSTRUCTION_MOV MEM SEPARATOR VAL {printf(output[DEF_MOV_M_V],S($2),$4);}
+    | INSTRUCTION_MOV MEM SEPARATOR MEM {printf(output[DEF_MOV_M_M],S($2),S($4));}
 ;
-cmp:  INSTRUCTION_CMP VAL SEPARATOR VAL {printf("\tflag=(%d<%d)*(-1)+(%d>%d)*1;\n", $2, $4, $2, $4);}
-    | INSTRUCTION_CMP VAL SEPARATOR MEM {printf("\tflag=(%d<mem[%d])*(-1)+(%d>mem[%d])*1;\n", $2, $4, $2, $4);}
-    | INSTRUCTION_CMP MEM SEPARATOR VAL {printf("\tflag=(mem[%d]<%d)*(-1)+(mem[%d]>%d)*1;\n", $2, $4, $2, $4);}
-    | INSTRUCTION_CMP MEM SEPARATOR MEM {printf("\tflag=(mem[%d]<mem[%d])*(-1)+(mem[%d]>mem[%d])*1;\n", $2, $4, $2, $4);}
+cmp:  INSTRUCTION_CMP VAL SEPARATOR VAL {printf(output[DEF_CMP_V_V], $2, $4, $2, $4);}
+    | INSTRUCTION_CMP VAL SEPARATOR MEM {printf(output[DEF_CMP_V_M], $2, S($4), $2, S($4));}
+    | INSTRUCTION_CMP MEM SEPARATOR VAL {printf(output[DEF_CMP_M_V], S($2), $4, S($2), $4);}
+    | INSTRUCTION_CMP MEM SEPARATOR MEM {printf(output[DEF_CMP_M_M], S($2), S($4), S($2), S($4));}
 ;
-jmp:  INSTRUCTION_JMP JMP_LABEL { printf("\tgoto %s;\n",$2);free($2);            }
-    | INSTRUCTION_JNZ JMP_LABEL { printf("\tif(flag!=0)goto %s;\n",$2);free($2); }
-    | INSTRUCTION_JEZ JMP_LABEL { printf("\tif(flag==0)goto %s;\n",$2);free($2); }
-    | INSTRUCTION_JGZ JMP_LABEL { printf("\tif(flag>0)goto %s;\n",$2);free($2);  }
-    | INSTRUCTION_JLZ JMP_LABEL { printf("\tif(flag<0)goto %s;\n",$2);free($2);  }
+jmp:  INSTRUCTION_JMP JMP_LABEL { printf(output[DEF_JMP],$2);free($2);            }
+    | INSTRUCTION_JNZ JMP_LABEL { printf(output[DEF_JNZ],$2);free($2); }
+    | INSTRUCTION_JEZ JMP_LABEL { printf(output[DEF_JEZ],$2);free($2); }
+    | INSTRUCTION_JGZ JMP_LABEL { printf(output[DEF_JGZ],$2);free($2);  }
+    | INSTRUCTION_JLZ JMP_LABEL { printf(output[DEF_JLZ],$2);free($2);  }
 ;
-add:  INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 + $6)); }
-    | INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d+mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]+%d;\n", $2, $4, $6); }
-    | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]+mem[%d];\n", $2, $4, $6); }
+add:  INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_ADD_V_V], S($2), ($4 + $6)); }
+    | INSTRUCTION_ADD MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_ADD_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_ADD_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_ADD MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_ADD_M_M], S($2), S($4), S($6)); }
 ;
-sub:  INSTRUCTION_SUB MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 - $6)); }
-    | INSTRUCTION_SUB MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d-mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_SUB MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]-%d;\n", $2, $4, $6); }
-    | INSTRUCTION_SUB MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]-mem[%d];\n", $2, $4, $6); }
+sub:  INSTRUCTION_SUB MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_SUB_V_V], S($2), ($4 - $6)); }
+    | INSTRUCTION_SUB MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_SUB_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_SUB MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_SUB_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_SUB MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_SUB_M_M], S($2), S($4), S($6)); }
 ;
-mul:  INSTRUCTION_MUL MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 * $6)); }
-    | INSTRUCTION_MUL MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d*mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_MUL MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]*%d;\n", $2, $4, $6); }
-    | INSTRUCTION_MUL MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]*mem[%d];\n", $2, $4, $6); }
+mul:  INSTRUCTION_MUL MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_MUL_V_V], S($2), ($4 * $6)); }
+    | INSTRUCTION_MUL MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_MUL_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_MUL MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_MUL_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_MUL MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_MUL_M_M], S($2), S($4), S($6)); }
 ;
-div:  INSTRUCTION_DIV MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 / $6)); }
-    | INSTRUCTION_DIV MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d/mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_DIV MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]/%d;\n", $2, $4, $6); }
-    | INSTRUCTION_DIV MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]/mem[%d];\n", $2, $4, $6); }
+div:  INSTRUCTION_DIV MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_DIV_V_V], S($2), ($4 / $6)); }
+    | INSTRUCTION_DIV MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_DIV_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_DIV MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_DIV_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_DIV MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_DIV_M_M], S($2), S($4), S($6)); }
 ;
-and:  INSTRUCTION_AND MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 & $6)); }
-    | INSTRUCTION_AND MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d&mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_AND MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]&%d;\n", $2, $4, $6); }
-    | INSTRUCTION_AND MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]&mem[%d];\n", $2, $4, $6); }
+and:  INSTRUCTION_AND MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_AND_V_V], S($2), ($4 & $6)); }
+    | INSTRUCTION_AND MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_AND_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_AND MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_AND_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_AND MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_AND_M_M], S($2), S($4), S($6)); }
 ;
-or:   INSTRUCTION_OR MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 | $6)); }
-    | INSTRUCTION_OR MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d|mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_OR MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]|%d;\n", $2, $4, $6); }
-    | INSTRUCTION_OR MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]|mem[%d];\n", $2, $4, $6); }
+or:   INSTRUCTION_OR MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_OR_V_V], S($2), ($4 | $6)); }
+    | INSTRUCTION_OR MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_OR_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_OR MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_OR_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_OR MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_OR_M_M], S($2), S($4), S($6)); }
 ;
-xor:  INSTRUCTION_XOR MEM SEPARATOR VAL SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, ($4 ^ $6)); }
-    | INSTRUCTION_XOR MEM SEPARATOR VAL SEPARATOR MEM { printf("\tmem[%d] = %d^mem[%d];\n", $2, $4, $6); }
-    | INSTRUCTION_XOR MEM SEPARATOR MEM SEPARATOR VAL { printf("\tmem[%d] = mem[%d]^%d;\n", $2, $4, $6); }
-    | INSTRUCTION_XOR MEM SEPARATOR MEM SEPARATOR MEM { printf("\tmem[%d] = mem[%d]^mem[%d];\n", $2, $4, $6); }
+xor:  INSTRUCTION_XOR MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_XOR_V_V], S($2), ($4 ^ $6)); }
+    | INSTRUCTION_XOR MEM SEPARATOR VAL SEPARATOR MEM { printf(output[DEF_XOR_V_M], S($2), $4, S($6)); }
+    | INSTRUCTION_XOR MEM SEPARATOR MEM SEPARATOR VAL { printf(output[DEF_XOR_M_V], S($2), S($4), $6); }
+    | INSTRUCTION_XOR MEM SEPARATOR MEM SEPARATOR MEM { printf(output[DEF_XOR_M_M], S($2), S($4), S($6)); }
 ;
-not:  INSTRUCTION_NOT MEM SEPARATOR VAL { printf("\tmem[%d] = %d;\n", $2, (~$4)); }
-    | INSTRUCTION_NOT MEM SEPARATOR MEM { printf("\tmem[%d] = ~mem[%d];\n", $2, $4); }
+not:  INSTRUCTION_NOT MEM SEPARATOR VAL { printf(output[DEF_NOT_M_V], S($2), (~$4)); }
+    | INSTRUCTION_NOT MEM SEPARATOR MEM { printf(output[DEF_NOT_M_M], S($2), S($4)); }
 ;
 output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("\tprintf(\"%%s\", %s);\n", $3); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("\tprintf(%s,%d);\n",$3, $5); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR MEM BRACKET_RIGHT {printf("\tprintf(%s,mem[%d]);\n",$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR MEM BRACKET_RIGHT {printf("\tprintf(%s,mem[%d]);\n",$3, S($5)); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("\tprintf(%s,\'%c\');\n",$3, $5); free($3);}
        | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("\tprintf(%s,%s);\n",$3, $5);  free($3);}
 ;
@@ -134,18 +138,16 @@ int main(int argc, char**argv) {
       }
       yyin = f;
   }
-  printf("\
-#include <stdint.h>\n\
-#include <stdio.h>\n\
-#include <stdlib.h>\n\
-%s\n\
-int main(int argc, char** argv)\n\
-{\n\tint16_t mem[4096];\n\tint16_t flag = 0;\n\n","",header_str);
+  if(/*c*/1)
+  {
+    output = c_definitions;
+  }
+  else
+  {
+    output = asm_definitions;
+    m_size = sizeof(int16_t);
+  }
+  printf("%s",output[DEF_HEADER]);
   yyparse();
-  printf("}\n");
-}
-
-void yyerror (char const *err)
-{
-  fprintf (stderr, "%s\n", err);
+  printf("%s",output[DEF_FOOTER]);
 }

@@ -1,14 +1,4 @@
-print("Hallo\n");
-print("\tHallo\n");
-print("INT: %d\n", 15);
-print("INT: %d\n", '2');
-l:
-label:
-l_abel:
-print("152: %d\n", $152);
-mov $153, 123;
-add $152, $153, 123;
-print("153: %d\n", $153);
-print("152: %d\n", $152);
-jmp l;
-jez label;
+mov $12, 13;
+mov $12, $23;
+add $13, 12, $13;
+add $13, $12, $156;
