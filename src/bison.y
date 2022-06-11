@@ -128,17 +128,25 @@ VAL:  INT {$$=$1;}
 
 int main(int argc, char**argv) {
   FILE*f = NULL;
-  if(argc>1)
+  int fasm = 0;
+  for(int i = 1; i < argc; i++)
   {
-      f = fopen(argv[1], "r");
-      if(f==NULL)
-      {
-          printf("Could not open file\n");
-          return -1;
-      }
-      yyin = f;
+    if(argv[i][0]=='-' && argv[i][1]=='f')
+    {
+        fasm = !fasm;
+    }
+    else
+    {
+        f = fopen(argv[i], "r");
+        if(f==NULL)
+        {
+            printf("Could not open file\n");
+            return -1;
+        }
+        yyin = f;
+    }
   }
-  if(/*c*/1)
+  if(!fasm)
   {
     output = c_definitions;
   }
