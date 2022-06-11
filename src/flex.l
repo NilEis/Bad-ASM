@@ -32,6 +32,7 @@ and                       { return INSTRUCTION_AND;                             
 or                        { return INSTRUCTION_OR;                                                                        }
 xor                       { return INSTRUCTION_XOR;                                                                       }
 not                       { return INSTRUCTION_NOT;                                                                       }
+exit                      { return INSTRUCTION_EXIT;                                                                      }
 print                     { return MACRO_PRINT;                                                                           }
 \"                        { return QUOTE;                                                                                 }
 \(                        { return BRACKET_LEFT;                                                                          }

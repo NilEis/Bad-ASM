@@ -44,6 +44,7 @@
 %token INSTRUCTION_OR
 %token INSTRUCTION_XOR
 %token INSTRUCTION_NOT
+%token INSTRUCTION_EXIT
 
 %token MACRO_PRINT
 
@@ -60,7 +61,7 @@ input:
   | input op
   ;
 op: instruction LINE_SEPARATOR | output LINE_SEPARATOR | label | LINE_SEPARATOR;
-instruction: mov | cmp | jmp | add | sub | mul | div | and | or | xor | not
+instruction: mov | cmp | jmp | add | sub | mul | div | and | or | xor | not | exit
 ;
 mov:  INSTRUCTION_MOV MEM SEPARATOR VAL {printf(output[DEF_MOV_M_V],S($2),$4);}
     | INSTRUCTION_MOV MEM SEPARATOR MEM {printf(output[DEF_MOV_M_M],S($2),S($4));}
@@ -124,7 +125,7 @@ label: LABEL {printf(output[DEF_LABEL], $1); free($1);};
 VAL:  INT {$$=$1;}
     | CHAR {$$=(int16_t)$1;}
 ;
-exit: EXIT {printf(output[DEF_EXIT]);};
+exit: INSTRUCTION_EXIT {printf(output[DEF_EXIT]);};
 %%
 
 int main(int argc, char**argv) {
