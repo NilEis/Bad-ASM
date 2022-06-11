@@ -44,6 +44,11 @@ char *c_definitions[] = {
     "\tmem[%d] = mem[%d]^mem[%d];\n",
     "\tmem[%d] = %d;\n",
     "\tmem[%d] = ~mem[%d];\n",
+    "\tprintf(\"%%s\", %s);\n",
+    "\tprintf(%s,%d);\n",
+    "\tprintf(%s,mem[%d]);\n",
+    "\tprintf(%s,\'%c\');\n",
+    "\tprintf(%s,%s);\n",
     "}\n"};
 
 #endif // C_DEFINITIONS_H

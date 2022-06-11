@@ -48,6 +48,11 @@ enum
     DEF_XOR_M_M,
     DEF_NOT_M_V,
     DEF_NOT_M_M,
+    DEF_PRINT,
+    DEF_PRINT_INT,
+    DEF_PRINT_MEM,
+    DEF_PRINT_CHAR,
+    DEF_PRINT_STR,
     DEF_FOOTER,
 };
 

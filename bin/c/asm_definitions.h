@@ -100,6 +100,11 @@ main:\n\
     "\tmov eax, %d\n\tmov bx, %d\n\txor bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
     "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\txor bx, %d\n\tmov word [mem+eax], bx\n",
     "\txor %d, %d, %d\n",
+    "",/*NOT IMPLEMENTED*/
+    "",/*NOT IMPLEMENTED*/
+    "",/*NOT IMPLEMENTED*/
+    "",/*NOT IMPLEMENTED*/
+    "",/*NOT IMPLEMENTED*/
     "section '.data' data readable writeable\nmem: dw 4096 dup 0\n"};
 
 #endif // ASM_DEFINITIONS_H

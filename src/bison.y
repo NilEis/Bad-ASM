@@ -114,11 +114,11 @@ xor:  INSTRUCTION_XOR MEM SEPARATOR VAL SEPARATOR VAL { printf(output[DEF_XOR_V_
 not:  INSTRUCTION_NOT MEM SEPARATOR VAL { printf(output[DEF_NOT_M_V], S($2), (~$4)); }
     | INSTRUCTION_NOT MEM SEPARATOR MEM { printf(output[DEF_NOT_M_M], S($2), S($4)); }
 ;
-output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf("\tprintf(\"%%s\", %s);\n", $3); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf("\tprintf(%s,%d);\n",$3, $5); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR MEM BRACKET_RIGHT {printf("\tprintf(%s,mem[%d]);\n",$3, S($5)); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf("\tprintf(%s,\'%c\');\n",$3, $5); free($3);}
-       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf("\tprintf(%s,%s);\n",$3, $5);  free($3);}
+output:  MACRO_PRINT BRACKET_LEFT STRING  BRACKET_RIGHT {printf(output[DEF_PRINT], $3); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR INT BRACKET_RIGHT {printf(output[DEF_PRINT_INT],$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR MEM BRACKET_RIGHT {printf(output[DEF_PRINT_MEM],$3, S($5)); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR CHAR BRACKET_RIGHT {printf(output[DEF_PRINT_CHAR],$3, $5); free($3);}
+       | MACRO_PRINT BRACKET_LEFT STRING SEPARATOR STRING BRACKET_RIGHT {printf(output[DEF_PRINT_STR],$3, $5);  free($3);}
 ;
 label: LABEL {printf("%s\n", $1); free($1);};
 VAL:  INT {$$=$1;}
