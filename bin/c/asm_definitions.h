@@ -2,63 +2,53 @@
 #define ASM_DEFINITIONS_H
 
 char *asm_definitions[] = {
-    "\
-format PE\n\
-use32\n\
-entry main\n\
-macro mmov dest,src\n\
-{\n\
-\tmov dx, word[mem+src]\n\
-\tmov word[mem+dest], dx\n\
+    "
+global main\n\
+extern printf\n\
+%%macro mmov 2\n\
+\tmov dx, word[mem+%%2]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro mcmp 2\n\
+\tmov dx, word[mem+%%2]\n\
+\tcmp word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro madd 3\n\
+\tmov dx, word[mem+%%2]\n\
+\tadd dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
 }\n\
-macro mcmp dest,src\n\
-{\n\
-\tmov dx, word[mem+src]\n\
-\tcmp word[mem+dest], dx\n\
+%%macro msub %%1,%%2, %%3\n\
+\tmov dx, word[mem+%%2]\n\
+\tsub dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
 }\n\
-macro madd dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\tadd dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro msub dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\tsub dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro mmul dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\timul dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro mdiv dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\tidiv dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro mand dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\tand dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro mor dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\tor dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-macro mxor dest,srca, srcb\n\
-{\n\
-\tmov dx, word[mem+srca]\n\
-\txor dx, word[mem+srcb]\n\
-\tmov word[mem+dest], dx\n\
-}\n\
-section '.text' code readable executable\n\
+%%macro mmul 3\n\
+\tmov dx, word[mem+%%2]\n\
+\timul dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro mdiv 3\n\
+\tmov dx, word[mem+%%2]\n\
+\tidiv dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro mand 3\n\
+\tmov dx, word[mem+%%2]\n\
+\tand dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro mor 3\n\
+\tmov dx, word[mem+%%2]\n\
+\tor dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+%%macro mxor 3\n\
+\tmov dx, word[mem+%%2]\n\
+\txor dx, word[mem+%%3]\n\
+\tmov word[mem+%%1], dx\n\
+%%endmacro\n\
+section .text\n\
 main:\n\
 ",
     "\tmov word[mem+%d], %d\n",
@@ -107,6 +97,6 @@ main:\n\
     "",/*NOT IMPLEMENTED*/
     "%s\n",
     "",/*NOT IMPLEMENTED*/
-    "section '.data' data readable writeable\nmem: dw 4096 dup 0\n"};
+    "section .data\nmem: dw times 4096 dup 0\n"};
 
 #endif // ASM_DEFINITIONS_H
