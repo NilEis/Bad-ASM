@@ -1,7 +1,3 @@
 mov $10, 10;
-loop:
 print("Zelle 10 hat den Wert %d\n", $10);
-sub $10, $10, 1;
-cmp $10, 0;
-jnz loop;
 print("Fertig\n");

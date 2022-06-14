@@ -52,6 +52,8 @@ global main\n\
 %endmacro\n\
 section .text\n\
 main:\n\
+\tpush rbp\n\
+\tmov rbp, rsp\n\
 ",
     "\tmov word[mem+%d], %d\n",
     "\tmmov %d, %d\n",
@@ -87,11 +89,11 @@ main:\n\
     "\tmov word[mem+%d], %d\n",
     "\tmov eax, %d\n\tmov bx, %d\n\tor bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
     "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tor bx, %d\n\tmov word [mem+eax], bx\n",
-    "\tor %d, %d, %d\n",
+    "\tmor %d, %d, %d\n",
     "\tmov word[mem+%d], %d\n",
     "\tmov eax, %d\n\tmov bx, %d\n\txor bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
     "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\txor bx, %d\n\tmov word [mem+eax], bx\n",
-    "\txor %d, %d, %d\n",
+    "\tmxor %d, %d, %d\n",
     "",
     "",
     "",/*NOT IMPLEMENTED*/
@@ -100,7 +102,7 @@ main:\n\
     "",/*NOT IMPLEMENTED*/
     "",/*NOT IMPLEMENTED*/
     "%s\n",
-    "\tret\n",/*NOT IMPLEMENTED*/
-    "\tret\nsection .data\nmem: times 4096 db 0\n"};
+    "\tmov rsp, rbp\n\tpop rbp\n\tret\n",
+    "\tmov rsp, rbp\n\tpop rbp\n\tret\nsection .data\nmem: times 4096 db 0\n"};
 
 #endif // ASM_DEFINITIONS_H

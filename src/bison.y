@@ -199,8 +199,8 @@ void print_out(char const* str)
             fprintf(asm_str_def, "%d, ", str[i]);
             i++;
         }
-        fprintf(asm_str_def, "0\n");
-        printf("\tpush _%"PRIu32"\n\tcall printf\n", asm_str_i);
+        fprintf(asm_str_def, "10, 0\n");
+        printf("\txor eax, eax\n\tlea rcx, _%"PRIu32"\n\tcall printf\n", asm_str_i);
         asm_str_i++;
     }
     else
@@ -213,7 +213,7 @@ void print_out_i(char const* str, int i)
 {
     if(use_asm)
     {
-        printf("\tpush %d\n",i);
+        printf("\tmov rsi, %d\n",i);
         print_out(str);
     }
     else
@@ -226,7 +226,7 @@ void print_out_mem(char const* str, int i)
 {
     if(use_asm)
     {
-        printf("push word[mem+%d]\n",i);
+        printf("\tmov dx, word [mem+%d]\n\tmovzx edx, dx\n",i);
         print_out(str);
     }
     else
@@ -239,7 +239,7 @@ void print_out_c(char const* str, char c)
 {
     if(use_asm)
     {
-        printf("push %d\n",c);
+        printf("\tmov rdx, %d\n",c);
         print_out(str);
     }
     else
@@ -259,8 +259,8 @@ void print_out_str(char const* str, char const *s)
             fprintf(asm_str_def, "%d, ", s[i]);
             i++;
         }
-        fprintf(asm_str_def, "0\n");
-        printf("pushl _%"PRIu32"\n",asm_str_i);
+        fprintf(asm_str_def, "10, 0\n");
+        printf("\tlea rcx, _%"PRIu32"\n",asm_str_i);
         asm_str_i++;
         print_out(str);
     }
