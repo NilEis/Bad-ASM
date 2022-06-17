@@ -1,3 +1,14 @@
+a:
 mov $10, 10;
+b:
 print("Zelle 10 hat den Wert %d\n", $10);
+l:
+print("Zelle 10 hat den Wert %d\n", $10);
+c:
+sub $10, $10, 1;
+d:
+cmp $10, 0;
+e:
+jz l;
+f:
 print("Fertig\n");

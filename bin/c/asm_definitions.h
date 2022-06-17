@@ -8,91 +8,91 @@ extern printf\n\
 default rel\n\
 global main\n\
 %macro mmov 2\n\
-\tmov dx, word[mem+%2]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mcmp 2\n\
-\tmov dx, word[mem+%2]\n\
-\tcmp word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tcmp [rdx], word dx\n\
 %endmacro\n\
 %macro madd 3\n\
-\tmov dx, word[mem+%2]\n\
-\tadd dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\tadd dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro msub 3\n\
-\tmov dx, word[mem+%2]\n\
-\tsub dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\tsub dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mmul 3\n\
-\tmov dx, word[mem+%2]\n\
-\timul dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\timul dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mdiv 3\n\
-\tmov dx, word[mem+%2]\n\
-\tidiv dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\tidiv dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mand 3\n\
-\tmov dx, word[mem+%2]\n\
-\tand dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\tand dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mor 3\n\
-\tmov dx, word[mem+%2]\n\
-\tor dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\tor dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 %macro mxor 3\n\
-\tmov dx, word[mem+%2]\n\
-\txor dx, word[mem+%3]\n\
-\tmov word[mem+%1], dx\n\
+\tlea rdx, mem+%2\n\tmov dx, word[rdx]\n\
+\tlea rdx, mem+%3\n\txor dx, word[rdx]\n\
+\tlea rdx, mem+%1\n\tmov [rdx], word dx\n\
 %endmacro\n\
 section .text\n\
 main:\n\
 \tpush rbp\n\
 \tmov rbp, rsp\n\
 ",
-    "\tmov word[mem+%d], %d\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
     "\tmmov %d, %d\n",
     "\tcmp %d, %d\n",
-    "\tcmp %d, word [mem+%d]\n",
-    "\tcmp word [mem+%d], %d\n",
+    "\tlea rdx, [mem+%d]\n\tcmp %d, word [rdx]\n",
+    "\tlea rdx, [mem+%d]\n\tcmp [rdx], word %d\n",
     "\tmcmp word %d, %d\n",
     "\tjmp %s\n",
     "\tjnz %s\n",
     "\tjz %s\n",
     "\tjg %s\n",
     "\tjl %s\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\tadd bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tadd bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\tadd r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\tadd r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmadd %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\tsub bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tsub bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\tsub r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\tsub r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmsub %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\timul bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\timul bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\timul r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\timul r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmmul %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\tidiv bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tidiv bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\tidiv r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\tidiv r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmdiv %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\tand bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tand bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\tand r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\tand r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmand %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\tor bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\tor bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\tor r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\tor r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmor %d, %d, %d\n",
-    "\tmov word[mem+%d], %d\n",
-    "\tmov eax, %d\n\tmov bx, %d\n\txor bx, word[mem+%d]\n\tmov word [mem+eax], bx\n",
-    "\tmov eax, %d\n\tmov bx, word[mem+%d]\n\txor bx, %d\n\tmov word [mem+eax], bx\n",
+    "\tlea rdx, [mem+%d]\n\tmov [rdx], word %d\n",
+    "\tmov r8, %d\n\tmov r8w, %d\n\tlea rdx, [mem+%d]\n\txor r8w, word[rdx]\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
+    "\tmov r8, %d\n\tlea rdx, [mem+%d]\n\tmov r8w, word[rdx]\n\txor r8w, %d\n\tlea rdx, [mem+r8]\n\tmov [rdx], word r8w\n",
     "\tmxor %d, %d, %d\n",
     "",
     "",
